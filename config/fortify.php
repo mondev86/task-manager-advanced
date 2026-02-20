@@ -148,7 +148,7 @@ return [
         Features::resetPasswords(),
         Features::twoFactorAuthentication([
             'confirm' => true,
-            'confirmPassword' => false,
+            'confirmPassword' => true,
             // 'window' => 0
         ]),
     ],

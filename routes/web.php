@@ -6,6 +6,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -22,6 +23,19 @@ Route::get('/', function () {
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+    // Profile redirects
+    Route::get('/profile', function () {
+        return redirect('/settings/profile');
+    })->name('profile');
+
+    Route::patch('/profile', function () {
+        return redirect()->route('profile.update');
+    });
+
+    Route::delete('/profile', function () {
+        return redirect()->route('profile.destroy');
+    });
+
     // Rutas de Teams
     Route::resource('teams', TeamController::class);
 
@@ -44,6 +58,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/tasks/{task}/edit', [TaskController::class, 'edit'])->name('tasks.edit');
     Route::put('/tasks/{task}', [TaskController::class, 'update'])->name('tasks.update');
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
+    Route::get('/projects/{project}/tasks', [TaskController::class, 'index'])
+        ->name('tasks.index');
+
 
     // Rutas de Comentarios
     Route::post('/tasks/{task}/comments', [CommentController::class, 'store'])->name('comments.store');
@@ -52,3 +69,4 @@ Route::middleware('auth')->group(function () {
 });
 
 require __DIR__.'/auth.php';
+require __DIR__.'/settings.php';
