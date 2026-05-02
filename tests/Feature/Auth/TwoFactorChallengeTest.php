@@ -26,20 +26,22 @@ test('two factor challenge can be rendered', function () {
 
     $user = User::factory()->create();
 
+    // Properly enable two-factor authentication
     $user->forceFill([
         'two_factor_secret' => encrypt('test-secret'),
         'two_factor_recovery_codes' => encrypt(json_encode(['code1', 'code2'])),
         'two_factor_confirmed_at' => now(),
     ])->save();
 
-    $this->post(route('login'), [
-        'email' => $user->email,
-        'password' => 'password',
+    // Simulate being redirected to two-factor challenge after login
+    $this->withSession([
+        'login.id' => $user->id,
+        'login.remember' => false,
     ]);
 
     $this->get(route('two-factor.login'))
         ->assertOk()
         ->assertInertia(fn (Assert $page) => $page
-            ->component('auth/TwoFactorChallenge')
+            ->component('Auth/TwoFactorChallenge')
         );
 });
